@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Anime AI Recommender · modern UI</title>
+    <!-- Google Font & smooth icons (Font Awesome via CDN) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #f8f1fe 0%, #e9def0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            margin: 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 42px;
+            box-shadow: 0 30px 60px -10px rgba(106, 62, 138, 0.3),
+                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            padding: 40px 40px 48px;
+            width: 100%;
+            max-width: 840px;
+            transition: all 0.2s ease;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #441e6b, #9946c4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 i {
+            background: rgba(162, 93, 220, 0.2);
+            padding: 12px;
+            border-radius: 60px;
+            color: #6b21a5;
+            font-size: 2rem;
+            box-shadow: 0 8px 16px -8px rgba(128, 0, 255, 0.3);
+        }
+
+        .subhead {
+            font-size: 1.1rem;
+            color: #4a3760;
+            margin-bottom: 32px;
+            font-weight: 400;
+            border-left: 5px solid #b47bd6;
+            padding-left: 18px;
+            background: rgba(230, 215, 245, 0.3);
+            border-radius: 0 40px 40px 0;
+        }
+
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 20px 24px;
+            border-radius: 80px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 18px -6px rgba(80, 40, 120, 0.15);
+        }
+
+        .input-wrapper {
+            flex: 1 1 260px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 20px;
+            color: #a06ece;
+            font-size: 1.3rem;
+            pointer-events: none;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 18px 24px 18px 58px;
+            border: none;
+            background: white;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1e0f2c;
+            box-shadow: 0 4px 12px rgba(149, 93, 193, 0.15);
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            box-shadow: 0 8px 22px #b589da, 0 0 0 3px rgba(168, 101, 223, 0.3);
+        }
+
+        .input-wrapper input::placeholder {
+            color: #bba3d3;
+            font-weight: 400;
+        }
+
+        .search-form button {
+            background: linear-gradient(115deg, #7f3ab6, #b057e0);
+            border: none;
+            padding: 0 40px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.15s;
+            box-shadow: 0 12px 26px -5px #aa6dcf;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .search-form button i {
+            font-size: 1.2rem;
+        }
+
+        .search-form button:hover {
+            background: linear-gradient(115deg, #8f4ac9, #c86cf5);
+            transform: scale(1.02);
+            box-shadow: 0 20px 32px -8px #b47adb;
+        }
+
+        .error-message {
+            background: #ffe6f0;
+            border-left: 8px solid #d04f8a;
+            color: #a1315b;
+            padding: 18px 22px;
+            border-radius: 28px;
+            margin: 30px 0 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            backdrop-filter: blur(4px);
+        }
+
+        .error-message i {
+            font-size: 1.6rem;
+            color: #c44575;
+        }
+
+        .result-card {
+            margin-top: 42px;
+            background: rgba(255, 245, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 32px 36px;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 35px -8px rgba(111, 64, 148, 0.25);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(8px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .anime-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            border-bottom: 2px dashed #d7bdee;
+            padding-bottom: 12px;
+        }
+
+        .anime-header h2 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: #301845;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .anime-header .badge {
+            background: #f2e3ff;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #5f2d8c;
+            box-shadow: 0 2px 8px #dec5fc;
+        }
+
+        .stats-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px 40px;
+            margin: 26px 0 24px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 28px;
+            padding: 16px 26px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 14px rgba(185, 142, 222, 0.25);
+            flex: 1 1 180px;
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        .stat-icon {
+            background: #d9c0f0;
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #421e67;
+            font-size: 1.5rem;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #76549f;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c0f42;
+            line-height: 1.3;
+        }
+
+        .stat-value small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #8b6eb0;
+            margin-left: 4px;
+        }
+
+        .genres-panel {
+            background: #efe2ff;
+            border-radius: 30px;
+            padding: 16px 22px;
+            margin: 18px 0 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 16px;
+            border: 1px solid #f5ebff;
+        }
+
+        .genres-panel i {
+            font-size: 1.3rem;
+            color: #7d4da3;
+        }
+
+        .genre-tag {
+            background: white;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-weight: 600;
+            color: #491e78;
+            box-shadow: 0 2px 6px #d3b3f0;
+            font-size: 0.95rem;
+        }
+
+        .rec-title {
+            font-size: 1.5rem;
+            font-weight: 650;
+            color: #371953;
+            margin: 24px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rec-title i {
+            background: #c29bf0;
+            padding: 10px;
+            border-radius: 50%;
+            color: #2d0c4b;
+        }
+
+        .rec-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .rec-list li {
+            background: white;
+            border-radius: 50px;
+            padding: 14px 20px 14px 26px;
+            font-weight: 500;
+            color: #1b0d2b;
+            box-shadow: 0 6px 12px -6px #b18bd2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.1s;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .rec-list li i {
+            color: #b37be3;
+            font-size: 1.2rem;
+        }
+
+        .rec-list li:hover {
+            background: #f6edff;
+            transform: translateX(6px);
+            box-shadow: 0 10px 22px -12px #ab7ed4;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.95rem;
+            color: #886eb0;
+            text-align: center;
+            border-top: 1px dashed #dac0f0;
+            padding-top: 20px;
+        }
+
+        /* empty state */
+        .welcome-message {
+            text-align: center;
+            padding: 30px 20px 20px;
+            color: #523d6b;
+            font-size: 1.2rem;
+            background: rgba(250, 240, 255, 0.5);
+            border-radius: 50px;
+            margin-top: 18px;
+        }
+        .welcome-message i {
+            font-size: 2.5rem;
+            color: #ab79d1;
+            margin-bottom: 10px;
+        }
+
+        /* responsiveness */
+        @media (max-width: 550px) {
+            .glass-card { padding: 28px 20px; }
+            h1 { font-size: 2rem; }
+            .search-form { border-radius: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-card">
+        <!-- header with icon -->
+        <h1>
+            <i class="fas fa-robot"></i> 
+            Anime AI recommender
+        </h1>
+        <div class="subhead">
+            <i class="fas fa-sparkles" style="margin-right: 8px;"></i> predict score · discover similar anime
+        </div>
+
+        <!-- form – modern pill with icon -->
+        <form method="post" class="search-form">
+            <div class="input-wrapper">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" name="title" placeholder="e.g., Death Note, Spirited Away..." value="{{ request.form.get('title', '') }}" required>
+            </div>
+            <button type="submit">
+                <i class="fas fa-wand-magic-sparkles"></i> Predict & recommend
+            </button>
+        </form>
+
+        <!-- error block with nicer styling -->
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-circle-exclamation"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- if we have a result (title is set) show detailed output -->
+        {% if title %}
+        <div class="result-card">
+            <!-- anime title + predicted score badge -->
+            <div class="anime-header">
+                <h2>{{ title }}</h2>
+                <span class="badge"><i class="fas fa-star" style="color: #f9c74f;"></i> AI estimate</span>
+            </div>
+
+            <!-- 3 stat boxes: score, rating, genres simplified -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-label">predicted score</span>
+                        <span class="stat-value">{{ score }} <small>/10</small></span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fas fa-medal"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-label">rating class</span>
+                        <span class="stat-value">{{ rating }}</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon"><i class="fas fa-tags"></i></div>
+                    <div class="stat-content">
+                        <span class="stat-label">genres</span>
+                        <span class="stat-value">{{ genres.split(',')|length }} <small>categories</small></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- full genre list as pretty chips -->
+            <div class="genres-panel">
+                <i class="fas fa-film"></i>
+                {% for g in genres.split(',') %}
+                    <span class="genre-tag">{{ g | trim }}</span>
+                {% endfor %}
+            </div>
+
+            <!-- content‑based recommendations header -->
+            <div class="rec-title">
+                <i class="fas fa-list-ul"></i> Because you watched <strong style="color: #6f39a4;">{{ title }}</strong>
+            </div>
+
+            <!-- recommendation list with icon bullets -->
+            {% if recommendations %}
+            <ul class="rec-list">
+                {% for rec in recommendations %}
+                <li><i class="fas fa-play-circle"></i> {{ rec }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="color: #7b5f99; margin-left: 12px;"><i class="fas fa-info-circle"></i> similar titles will appear here</p>
+            {% endif %}
+        </div>
+        {% else %}
+            {% if not error %}
+            <!-- beautiful empty state when no query yet (no error and no title) -->
+            <div class="welcome-message">
+                <i class="fas fa-ghost"></i>
+                <p>enter any anime to see AI predictions & hand‑picked recommendations</p>
+                <div style="margin-top: 18px; font-size: 0.95rem; background: rgba(230,210,250,0.7); border-radius: 60px; padding: 12px 24px; display: inline-block;">
+                    <i class="fas fa-dragon"></i>  shōnen · slice of life · fantasy  <i class="fas fa-crown"></i>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- subtle footer with vibe -->
+        <div class="footer-note">
+            <i class="fas fa-cpu"></i> AI-powered predictions · collaborative filtering + content similarity
+        </div>
+    </div>
+</body>
+</html>
